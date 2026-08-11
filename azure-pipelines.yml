@@ -48,6 +48,8 @@ stages:
 
         chmod +x "$HOME/bin/terraform"
 
+        export PATH="$HOME/bin:$PATH"
+
         echo "##vso[task.prependpath]$HOME/bin"
 
         echo "Terraform installed at:"
@@ -182,6 +184,8 @@ stages:
               unzip -o terraform.zip -d "$HOME/bin"
 
               chmod +x "$HOME/bin/terraform"
+
+              export PATH="$HOME/bin:$PATH"
 
               echo "##vso[task.prependpath]$HOME/bin"
 
