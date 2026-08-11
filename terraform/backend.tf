@@ -1,0 +1,10 @@
+terraform {
+  backend "azurerm" {
+    resource_group_name  = "rg-tf-demo-dev"
+    storage_account_name = "imaribastorageaccdev001"
+    container_name       = "tfstate"
+    key                  = "dev.terraform.tfstate"
+
+    use_azuread_auth = true
+  }
+}
