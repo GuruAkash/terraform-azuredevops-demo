@@ -39,7 +39,13 @@ stages:
           "https://releases.hashicorp.com/terraform/$(terraformVersion)/terraform_$(terraformVersion)_linux_amd64.zip" \
           -o terraform.zip
 
-        unzip -p terraform.zip terraform > "$HOME/bin/terraform"
+        echo "Downloaded Terraform archive:"
+        ls -lh terraform.zip
+
+        echo "Extracting Terraform..."
+
+        unzip -o terraform.zip -d "$HOME/bin"
+
         chmod +x "$HOME/bin/terraform"
 
         echo "##vso[task.prependpath]$HOME/bin"
@@ -47,7 +53,9 @@ stages:
         echo "Terraform installed at:"
         which terraform
 
+        echo "Terraform version:"
         terraform version
+
       displayName: 'Install Terraform'
 
     # --------------------------------------------------------
@@ -57,6 +65,7 @@ stages:
     - bash: |
         cd terraform
         terraform fmt -check -recursive
+
       displayName: 'Terraform Format Check'
 
     # --------------------------------------------------------
@@ -148,6 +157,7 @@ stages:
 
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Terraform Plan'
+
             inputs:
               artifactName: 'terraform-plan'
               targetPath: '$(Pipeline.Workspace)/terraform-plan'
@@ -167,11 +177,15 @@ stages:
                 "https://releases.hashicorp.com/terraform/$(terraformVersion)/terraform_$(terraformVersion)_linux_amd64.zip" \
                 -o terraform.zip
 
-              unzip -p terraform.zip terraform > "$HOME/bin/terraform"
+              echo "Extracting Terraform..."
+
+              unzip -o terraform.zip -d "$HOME/bin"
+
               chmod +x "$HOME/bin/terraform"
 
               echo "##vso[task.prependpath]$HOME/bin"
 
+              echo "Terraform version:"
               terraform version
 
             displayName: 'Install Terraform'
