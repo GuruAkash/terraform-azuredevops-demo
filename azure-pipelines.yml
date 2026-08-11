@@ -15,12 +15,16 @@ steps:
 
       echo "Installing Terraform $(terraformVersion)..."
 
+      mkdir -p "$HOME/bin"
+
       curl -fsSL \
         "https://releases.hashicorp.com/terraform/$(terraformVersion)/terraform_$(terraformVersion)_linux_amd64.zip" \
         -o terraform.zip
 
-      unzip -o terraform.zip
-      sudo mv terraform /usr/local/bin/terraform
+      unzip -p terraform.zip terraform > "$HOME/bin/terraform"
+      chmod +x "$HOME/bin/terraform"
+
+      echo "##vso[task.prependpath]$HOME/bin"
 
       terraform version
     displayName: 'Install Terraform'
