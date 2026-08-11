@@ -8,6 +8,7 @@ variables:
   terraformVersion: '1.15.6'
 
 steps:
+
   - checkout: self
 
   - bash: |
@@ -24,27 +25,52 @@ steps:
       unzip -p terraform.zip terraform > "$HOME/bin/terraform"
       chmod +x "$HOME/bin/terraform"
 
-      export PATH="$HOME/bin:$PATH"
       echo "##vso[task.prependpath]$HOME/bin"
 
       echo "Terraform installed at:"
       which terraform
 
-      echo "Terraform version:"
       terraform version
     displayName: 'Install Terraform'
-
-  - bash: |
-      cd terraform
-      terraform init -backend=false
-    displayName: 'Terraform Init'
 
   - bash: |
       cd terraform
       terraform fmt -check -recursive
     displayName: 'Terraform Format Check'
 
-  - bash: |
-      cd terraform
-      terraform validate
-    displayName: 'Terraform Validate'
+  - task: AzureCLI@2
+    displayName: 'Terraform Init Validate Plan'
+    inputs:
+      azureSubscription: 'azure-terraform'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      addSpnToEnvironment: true
+      inlineScript: |
+        set -e
+
+        export ARM_USE_OIDC=true
+        export ARM_USE_AZUREAD=true
+        export ARM_CLIENT_ID="$servicePrincipalId"
+        export ARM_OIDC_TOKEN="$idToken"
+        export ARM_TENANT_ID="$tenantId"
+        export ARM_SUBSCRIPTION_ID="$(az account show --query id -o tsv)"
+
+        cd terraform
+
+        echo "======================================"
+        echo "Terraform Init"
+        echo "======================================"
+
+        terraform init
+
+        echo "======================================"
+        echo "Terraform Validate"
+        echo "======================================"
+
+        terraform validate
+
+        echo "======================================"
+        echo "Terraform Plan"
+        echo "======================================"
+
+        terraform plan -var-file="environments/dev.tfvars"
