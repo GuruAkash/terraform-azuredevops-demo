@@ -1,0 +1,41 @@
+trigger:
+  - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  terraformVersion: '1.15.6'
+
+steps:
+  - checkout: self
+
+  - bash: |
+      set -e
+
+      echo "Installing Terraform $(terraformVersion)..."
+
+      curl -fsSL \
+        "https://releases.hashicorp.com/terraform/$(terraformVersion)/terraform_$(terraformVersion)_linux_amd64.zip" \
+        -o terraform.zip
+
+      unzip -o terraform.zip
+      sudo mv terraform /usr/local/bin/terraform
+
+      terraform version
+    displayName: 'Install Terraform'
+
+  - bash: |
+      cd terraform
+      terraform init -backend=false
+    displayName: 'Terraform Init'
+
+  - bash: |
+      cd terraform
+      terraform fmt -check -recursive
+    displayName: 'Terraform Format Check'
+
+  - bash: |
+      cd terraform
+      terraform validate
+    displayName: 'Terraform Validate'
