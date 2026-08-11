@@ -25,6 +25,7 @@ steps:
       unzip -p terraform.zip terraform > "$HOME/bin/terraform"
       chmod +x "$HOME/bin/terraform"
 
+      export PATH="$HOME/bin:$PATH"
       echo "##vso[task.prependpath]$HOME/bin"
 
       echo "Terraform installed at:"
