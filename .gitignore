@@ -1,0 +1,13 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+terraform.tfvars
+
+# VS Code
+.vscode/
+
+# Terraform Lock File
+# Keep .terraform.lock.hcl tracked in Git
